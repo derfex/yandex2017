@@ -1,0 +1,50 @@
+html, body{
+    margin:0;
+    padding:0;
+    height:100%;
+}
+body{display:flex}
+form{
+    margin:auto;
+    border:2px solid #ddd;
+    padding:20px;
+    font-family:sans-serif;
+}
+form, input{font-size:20px;color:#333}
+label, button, #resultContainer:before{font-size:16px;color:#777}
+label, input, button{
+    padding:10px;
+    display:block;
+}
+label{padding-bottom:4px;cursor:pointer}
+input, button, #resultContainer{
+    box-sizing:border-box;
+    border:1px solid #777;
+    border-radius:4px;
+    width:360px;
+}
+button{
+    margin:20px 0;
+    cursor:pointer;
+}
+#resultContainer{
+    position:relative;
+    padding:50px 10px 10px;
+    height:100px
+}
+#resultContainer:before{
+    content:'Результат:';
+    position:absolute;
+    top:10px;
+    left:10px;
+}
+
+
+
+/* ## По заданию ## */
+/* Ошибка валидации поля */
+.error{border:1px solid red}
+/* Показатель успешного / выполняющегося / ошибочного результата для #resultContainer */
+#resultContainer.success{border-color:green}
+#resultContainer.progress{border-color:blue}
+#resultContainer.error{border-color:red}
