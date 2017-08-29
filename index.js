@@ -1,18 +1,17 @@
 /**
  * Created by derfex on 17.08.2017.
  */
-;
-(function(w, d) {
+var MyForm = (function(d) {
     'use strict';
     // ## Вспомогательные функции ##
-    // Создать пустую коллекцию (без __proto__), перебор коллекции конструкцией “for in” не требует hasOwnProperty():
+    // Создать пустую коллекцию (без __proto__):
     function _newCollection() { return Object.create(null); }
     // Проверить [[Class]] переменной:
     function _is(type, obj) {
         var _class = Object.prototype.toString.call(obj).slice(8, -1);
         return obj !== undefined && obj !== null && _class === type;
     }
-    // Возвращает случайное число между min (включительно) и max (не включая max)
+    // Возвращает случайное число между min (включительно) и max (не включая max):
     function _getRandomArbitrary(min, max) {
         return Math.random() * (max - min) + min;
     }
@@ -72,11 +71,16 @@
     // ## Коллекция с рабочими данными ##
     var _private = _newCollection();
 
+    // ## Форма ##
+    _private.form = _newCollection();
+    _private.form.el = d.forms.myForm;
+    _private.form.enabled = true;
+
     // ## Поля ##
     _private.field = _newCollection();
     ['fio', 'email', 'phone'].forEach(function(fieldName) {
         var field = _private.field[fieldName] = _newCollection();
-        field.el = myForm[fieldName];
+        field.el = _private.form[fieldName];
         field.status = 'default';
     });
     // Ф. И. О.:
@@ -160,14 +164,13 @@
         }
         var url = 'resource/response/' + response + '.json';
         xhr.open('POST', url, false); // Блокируем асинхронность, чтобы не блокировать / разблокировать интерфейс.
-        xhr.send();
+        xhr.send(JSON.stringify(module.getData()));
     };
 
 
-
-    // ## Глобальный объект MyForm ##
-    var Y = w.MyForm = {}; // Вдруг нужен обычный объект, а не коллекция.
-    Y.validate = function() {
+    // ## Глобальный объект ##
+    var module = {};
+    module.validate = function() {
         var result = {
             isValid: true,
             errorFields: []
@@ -183,14 +186,14 @@
         }
         return result;
     };
-    Y.getData = function() {
+    module.getData = function() {
         var result = {};
         for (var fieldName in _private.field) {
             result[fieldName] = _private.field[fieldName].el.value;
         }
         return result;
     };
-    Y.setData = function(data) {
+    module.setData = function(data) {
         if (!_is('Object', data)) return;
         for (var fieldName in _private.field) {
             var value = data[fieldName];
@@ -199,15 +202,17 @@
             }
         }
     };
-    Y.submit = function() {
-        if (Y.validate().isValid) {
+    module.submit = function() {
+        if (module.validate().isValid) {
             _private.runAJAX();
         }
     };
 
     // ## Обработка отправки формы ##
-    myForm.addEventListener('submit', function(event) {
+    _private.form.addEventListener('submit', function(event) {
         event.preventDefault();
-        Y.submit();
+        module.submit();
     });
-})(window, document);
+
+    return module;
+})(document);
