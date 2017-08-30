@@ -61,7 +61,7 @@ var MyForm = (function(d) {
         // Удалить крайние пробелы, сохранить результат для пользователя:
         el.value = el.value.trim();
         // Корректный e-mail без субдомена и длинного имени домена первого уровня:
-        var RE = /^([A-Za-z0-9_\-\.])+\@([A-Za-z])+\.([A-Za-z]{2,3})$/;
+        var RE = /^([\w\-\.])+\@([A-Za-z])+\.([A-Za-z]{2,3})$/;
         if (RE.test(el.value)) {
             return !!~_private.field.email.ALLOW_DOMAIN.indexOf(el.value.split('@')[1]);
         }
@@ -74,9 +74,9 @@ var MyForm = (function(d) {
         // Удалить крайние пробелы, сохранить результат для пользователя:
         el.value = el.value.trim();
         // Номер телефона в формате +7(999)999-99-99 (скобки и дефисы обязательны):
-        var RE = /^\+7\(([0-9]{3})\)([0-9]{3})\-([0-9]{2})\-([0-9]{2})$/;
+        var RE = /^\+7\((\d{3})\)(\d{3})\-(\d{2})\-(\d{2})$/;
         if (RE.test(el.value)) {
-            return el.value.replace(/[^0-9]/gim,'').split('')
+            return el.value.replace(/\D/g, '').split('')
                     .reduce(function(sum, currentNumber) {
                         return sum + +currentNumber;
                     }, 0) <= _private.field.phone.MAX_SUM;
