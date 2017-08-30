@@ -80,7 +80,7 @@ var MyForm = (function(d) {
     _private.field = _newCollection();
     ['fio', 'email', 'phone'].forEach(function(fieldName) {
         var field = _private.field[fieldName] = _newCollection();
-        field.el = _private.form[fieldName];
+        field.el = _private.form.el[fieldName];
         field.status = 'default';
     });
     // Ф. И. О.:
@@ -209,7 +209,7 @@ var MyForm = (function(d) {
     };
 
     // ## Обработка отправки формы ##
-    _private.form.addEventListener('submit', function(event) {
+    _private.form.el.addEventListener('submit', function(event) {
         event.preventDefault();
         module.submit();
     });
