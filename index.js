@@ -29,43 +29,7 @@ var MyForm = (function(d) {
             field.status = 'invalid';
         }
     }
-    // Результат: сброс:
-    function _markResultDefault(result) {
-        if (result.status !== 'default') {
-            result.el.classList.remove('success');
-            result.el.classList.remove('error');
-            result.el.classList.remove('progress');
-            result.status = 'default';
-            result.el.innerText = '';
-        }
-    }
-    // Результат: успех:
-    function _markResultSuccess(result) {
-        if (result.status !== 'success') {
-            result.el.classList.add('success');
-            result.el.classList.remove('error');
-            result.el.classList.remove('progress');
-            result.status = 'success';
-        }
-    }
-    // Результат: ошибка:
-    function _markResultError(result) {
-        if (result.status !== 'error') {
-            result.el.classList.remove('success');
-            result.el.classList.add('error');
-            result.el.classList.remove('progress');
-            result.status = 'error';
-        }
-    }
-    // Результат: исполнение:
-    function _markResultProgress(result) {
-        if (result.status !== 'progress') {
-            result.el.classList.remove('success');
-            result.el.classList.remove('error');
-            result.el.classList.add('progress');
-            result.status = 'progress';
-        }
-    }
+
 
 
     // ## Коллекция с рабочими данными ##
@@ -124,22 +88,38 @@ var MyForm = (function(d) {
     _private.result = _newCollection();
     _private.result.el = d.getElementById('resultContainer');
     _private.result.status = 'default';
+    _private.result.STATUS_LIST = ['success', 'progress', 'error'];
+    _private.result.mark = function(requiredStatus) {
+        if (!!~_private.result.STATUS_LIST.indexOf(requiredStatus)) {
+            if (_private.result.status !== requiredStatus) {
+                _private.result.STATUS_LIST.forEach(function(status) {
+                    _private.result.el.classList[status !== requiredStatus ? 'remove' : 'add'](status);
+                });
+                _private.result.status = requiredStatus;
+            }
+        } else {
+            if (_private.result.status !== 'default') {
+                _private.result.STATUS_LIST.forEach(function(status) {
+                    _private.result.el.classList.remove(status);
+                });
+                _private.result.status = 'default';
+            }
+        }
+    };
     _private.result.handle = function(responseJSON) {
         var response = JSON.parse(responseJSON);
+        _private.result.mark(response.status);
         switch (response.status) {
             case 'success':
-                _markResultSuccess(_private.result);
                 _private.result.el.innerText = 'Success';
                 break;
             case 'progress':
-                _markResultProgress(_private.result);
                 _private.result.el.innerText = '';
                 setTimeout(function() {
                     _private.runAJAX();
                 }, response.timeout);
                 break;
             case 'error':
-                _markResultError(_private.result);
                 _private.result.el.innerText = response.reason;
                 break;
         }
@@ -205,6 +185,10 @@ var MyForm = (function(d) {
     module.submit = function() {
         if (module.validate().isValid) {
             _private.runAJAX();
+        } else {
+            // Приводим элемент с результатом в исходное положение:
+            _private.result.mark();
+            _private.result.el.innerText = '';
         }
     };
 
