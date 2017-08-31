@@ -115,9 +115,7 @@ var MyForm = (function(d) {
                 break;
             case 'progress':
                 _private.result.el.innerText = '';
-                setTimeout(function() {
-                    _private.runAJAX();
-                }, response.timeout);
+                setTimeout(_private.runAJAX, response.timeout);
                 break;
             case 'error':
                 _private.result.el.innerText = response.reason;
