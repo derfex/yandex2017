@@ -124,6 +124,23 @@ var MyForm = (function(d) {
     };
 
 
+    _private.getURL = function() {
+        return _private.getURL.usedMethod();
+    };
+    _private.getURL.usedMethod = _private.getURL.useAction = function() {
+        return _private.form.el.getAttribute('action');
+    };
+    _private.getURL.useRandom = function() {
+        // Положим, сервер чаще отдаёт статус 'progress', на втором месте 'success', в других случаях 'error':
+        var randomNumber = _getRandomArbitrary(0, 10);
+        var response = 'error';
+        if (randomNumber > 7) {
+            response = 'success';
+        } else if (randomNumber > 2) {
+            response = 'progress';
+        }
+        return 'resource/response/' + response + '.json';
+    };
     // ## Выполнить AJAX-запрос ##
     _private.runAJAX = function() {
         var xhr = new XMLHttpRequest();
@@ -132,15 +149,7 @@ var MyForm = (function(d) {
                 _private.result.handle(this.responseText);
             }
         };
-        // Положим, сервер чаще отдаёт статус 'progress', на втором месте 'success', в других случаях 'error':
-        var random = _getRandomArbitrary(0, 10);
-        var response = 'error';
-        if (random > 7) {
-            response = 'success';
-        } else if (random > 2) {
-            response = 'progress';
-        }
-        var url = 'resource/response/' + response + '.json';
+        var url = _private.getURL();
         xhr.open('POST', url, false); // Блокируем асинхронность, чтобы не блокировать / разблокировать интерфейс.
         xhr.send(JSON.stringify(module.getData()));
     };
@@ -188,6 +197,9 @@ var MyForm = (function(d) {
             _private.result.mark();
             _private.result.el.innerText = '';
         }
+    };
+    module._useAction = function(bool) {
+        _private.getURL.usedMethod = _private.getURL[!arguments.length || bool ? 'useAction' : 'useRandom'];
     };
 
     // ## Обработка отправки формы ##
